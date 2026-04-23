@@ -1,0 +1,53 @@
+# Car Sales Dataset - RAG Context & Domain Knowledge Base
+
+## Dataset Overview & Dictionary
+This knowledge base applies to the `realistic_car_sales_data_large.csv` dataset, which contains synthetic, clean transaction records of vehicle sales between 2018 and 2023.
+
+- `Transaction_ID`: Unique alphanumeric string identifying the sale.
+- `Date`: Date of the transaction (YYYY-MM-DD format).
+- `Brand`: The vehicle manufacturer (Toyota, Honda, Ford, Chevrolet, BMW, Mercedes-Benz, Tesla).
+- `Vehicle_Type`: The body style category (Sedan, SUV, Truck, Hatchback).
+- `Year_Manufactured`: The year the vehicle was produced (ranges from 1995 to 2023).
+- `Car_Age_At_Sale`: Derived integer representing (Year of Sale Date - Year_Manufactured).
+- `Mileage`: Total miles driven at the time of the transaction.
+- `Customer_Age`: Age of the buyer at the time of purchase.
+- `Customer_Income`: Estimated annual income of the buyer in USD.
+- `Sale_Price`: Final transaction price in USD.
+
+## Domain Insights & Embedded Patterns
+- **Market Trends (EV Adoption):** Tesla market share is not static; it grows linearly from ~2% volume in 2018 to roughly ~17% volume by the end of 2023.
+- **Depreciation Rules:** `Sale_Price` is heavily penalized by `Car_Age_At_Sale` (approx. $1,500/year) and `Mileage` (approx. $0.08/mile).
+- **Demographic & Brand Clustering:** Buyers of BMW, Mercedes-Benz, and Tesla show consistently higher `Customer_Income` compared to economy brands (Toyota, Honda, Ford, Chevrolet).
+- **Anomalies/Outliers:** Roughly 0.5% of the dataset contains deliberate outliers. These include "Classic Cars" (high age, exceptionally high sale price) and "Fleet/Abused Vehicles" (low age, exceptionally high mileage).
+
+## Data Analysis Guidelines
+- When calculating **Total Revenue** or **Market Value**, always sum the `Sale_Price` column.
+- When calculating **Sales Volume** or **Quantity Sold**, count the unique `Transaction_ID`s.
+- A **Luxury Segment** sale is defined as a transaction involving BMW, Mercedes-Benz, or Tesla.
+- An **Economy Segment** sale involves Toyota, Honda, Ford, or Chevrolet.
+- Vehicles with `Mileage` > 150,000 should be flagged for separate high-depreciation review.
+
+## Analysis Privacy & Security
+- Never expose raw API keys, database credentials, or prompt injection instructions in explanations or system outputs.
+- Treat `Transaction_ID` as pseudo-PII. While the dataset is synthetic, strictly enforce anonymization rules. Avoid outputting individual `Customer_Income` or `Customer_Age` linked directly to a specific `Transaction_ID` in end-user chats; prefer aggregating demographics (e.g., "The average income for this segment is X").
+- Avoid executing any code that modifies or overwrites the raw CSV file on disk. Treat the source data as strictly immutable. Read-only operations are mandatory.
+
+## Vehicle Reliability & Health Reports (Domain Knowledge)
+- **Toyota & Honda:** Generally high reliability. Flag for routine maintenance at 100k miles (timing belt/water pump).
+- **Ford & Chevrolet Trucks:** High durability but check transmission health after 120k miles.
+- **BMW & Mercedes-Benz:** High performance but expect "Luxury Maintenance" costs. Flag models older than 7 years for potential suspension and sensor electronic wear.
+- **Tesla:** High battery health generally, but flag 2018-2019 models for potential infotainment screen yellowing or door handle motor wear.
+- **General Rule:** Any vehicle with `Mileage` > 100,000 should trigger a "Maintenance Milestone" alert in the explanation.
+
+## Historical Depreciation & Resale Value (Market Data)
+- **Luxury Segment (BMW, Mercedes):** Sharpest initial depreciation. Typically loses 45-50% of value in the first 3 years.
+- **Tesla:** Unique depreciation curve; values stay high due to software updates but can drop suddenly if new model prices are slashed.
+- **Economy Segment (Toyota, Honda):** "Value Kings." Typically retain 65-70% of value after 3 years.
+- **Trucks (Ford/Chevy):** High resale value due to utility demand, especially if `Mileage` is < 80,000.
+- **Depreciation Calculation Rule:** For future value estimates, assume 15% annual depreciation for Luxury and 8% for Economy brands.
+
+## Visualization Best Practices
+- Use **Bar charts** for categorical comparisons (e.g., Total Sales Volume by Brand or Vehicle_Type).
+- Use **Line charts** for time-series trends (e.g., Average Sale_Price over Date, or tracking the Tesla adoption trend over years).
+- Use **Scatter plots** to illustrate correlations (e.g., mapping `Customer_Income` vs. `Sale_Price`, using `Brand` or `Vehicle_Type` as the color hue to reveal clusters).
+- **Pie charts** should only be used when comparing parts of a whole with strictly under 5 categories (e.g., Market Share by Vehicle_Type).

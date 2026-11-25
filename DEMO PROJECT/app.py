@@ -14,10 +14,11 @@ import scipy.stats as stats
 # ==========================================
 # 0. CONFIGURATION & API KEY
 # ==========================================
-GROQ_API_KEY = "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" # User provided
-
 load_dotenv()
-api_key = GROQ_API_KEY if GROQ_API_KEY != "YOUR_GROQ_API_KEY_HERE" else os.getenv("GROQ_API_KEY", "")
+api_key = os.getenv("GROQ_API_KEY", "").strip()
+
+if not api_key:
+    st.warning("Groq API key not found. Add GROQ_API_KEY to your local .env file.")
 
 # Page Config
 st.set_page_config(page_title="CSV AI Analyst Pro (RAG)", page_icon="🧠", layout="wide")
